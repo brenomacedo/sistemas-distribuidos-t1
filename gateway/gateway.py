@@ -9,7 +9,7 @@ class Gateway:
     multicast_group_ip: str = "224.1.1.1",
     multicast_group_port: int = 5005,
     tcp_listen_ip: str = "0.0.0.0",
-    tcp_listen_port: int = 5006,
+    tcp_listen_port: int = 5008,
     discover_interval_in_seconds: int = 5,
   ):
     self.multicast_group_ip = multicast_group_ip
@@ -18,21 +18,26 @@ class Gateway:
     self.tcp_listen_port = tcp_listen_port
     self.discover_interval_in_seconds = discover_interval_in_seconds
 
-  def __send_socket(self, message: str, ip_address: str, port: int | None = None):
-    port = port or self.tcp_listen_port
+  # def __send_socket(self, message: str, ip_address: str, port: int | None = None):
+  #   port = port or self.tcp_listen_port
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((ip_address, port))
+  #   client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  #   client_socket.connect((ip_address, port))
 
-    message = "Olá, servidor!".encode("utf-8")
-    client_socket.sendall(message)
-    client_socket.close()
+  #   message = "Olá, servidor!".encode("utf-8")
+  #   client_socket.sendall(message)
+  #   client_socket.close()
 
   def __discover_devices(self):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock = socket.socket(
+      socket.AF_INET, # familia de ips ipv4 
+      socket.SOCK_DGRAM, # socket baseado em datagramas (UDP)
+      socket.IPPROTO_UDP # protocolo UDP
+    )
+
     sock.setsockopt(
       socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2
-    )  # Definir o TTL do multicast
+    )  # Definir o TTL do multicast no nivel IP
 
     try:
       while True:
@@ -48,7 +53,10 @@ class Gateway:
       sock.close()
 
   def __listen_messages(self):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(
+      socket.AF_INET, # familia de ips ipv4 
+      socket.SOCK_STREAM # socket orientado a conexão (TCP)
+    )
     server_socket.bind((self.tcp_listen_ip, self.tcp_listen_port))
     server_socket.listen(10)
 
@@ -80,7 +88,6 @@ class Gateway:
         time.sleep(1)
     except KeyboardInterrupt:
       print("\nEncerrando o gateway.")
-
 
 gateway = Gateway()
 gateway.start()

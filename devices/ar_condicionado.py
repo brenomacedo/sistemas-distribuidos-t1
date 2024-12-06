@@ -1,11 +1,12 @@
 import socket
 import struct
 import time
+import random
 from threading import Thread
 
 
 class ArCondicionado:
-  gateway_ip: str | None = None
+  gateway_ip: str # | None = None
 
   def __init__(
     self,
@@ -13,17 +14,20 @@ class ArCondicionado:
     multicast_group_port: int = 5005,
     tcp_listen_ip: str = "0.0.0.0",
     tcp_listen_port: int = 5006,
+    gateway_port: str = 5008,
   ):
     self.multicast_group_ip = multicast_group_ip
     self.multicast_group_port = multicast_group_port
     self.tcp_listen_ip = tcp_listen_ip
     self.tcp_listen_port = tcp_listen_port
+    self.gateway_ip = None,
+    self.gateway_port = gateway_port
 
   def __send_socket(
-    self, message: str, ip_address: str | None = None, port: int | None = None
+    self, message: str, ip_address = None, port = None
   ):
     ip_address: str = ip_address or self.gateway_ip
-    port = port or self.tcp_listen_port
+    port = port or self.gateway_port
 
     if ip_address is None:
       return
@@ -45,6 +49,7 @@ class ArCondicionado:
 
     data, address = sock.recvfrom(1024)
     self.gateway_ip = address[0]
+    print("GATEWAY IP SETADO:", self.gateway_ip)
     print(f"Mensagem recebida do gateway {address}: {data.decode('utf-8')}")
     sock.close()
 
@@ -77,23 +82,32 @@ class ArCondicionado:
     self.__listen_messages()
 
   def send_temperature(self):
-    self.__send_socket("Temperatura nova do ar condicionado: 22 graus celsius")
-    time.sleep(2)
-    # try:
-    # except Exception:
-    #   print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
+    try:
+      while True:
+        message = "Temperatura nova do ar condicionado: " + str(random.randrange(18, 26)) + " graus celsius"
+        self.__send_socket(message)
+        time.sleep(2)
+    except Exception:
+      print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
 
   def start(self):
+    sender_thread_is_started = False
+    
     # Iniciar threads para envio e recepção
     listen_messages_thread = Thread(target=self.discover_and_listen, daemon=True)
     send_temperature_thread = Thread(target=self.send_temperature, daemon=True)
 
     listen_messages_thread.start()
-    send_temperature_thread.start()
+    print("Thread 1 iniciada")
+    # send_temperature_thread.start()
 
     try:
       while True:
         time.sleep(1)
+        if self.gateway_ip[0] != None and not sender_thread_is_started:
+          send_temperature_thread.start()
+          print("Thread 2 iniciada")
+          sender_thread_is_started = True
     except KeyboardInterrupt:
       print("\nEncerrando o gateway.")
 
