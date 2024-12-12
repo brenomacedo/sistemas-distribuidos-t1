@@ -103,7 +103,7 @@ class ArCondicionado:
         )
         self.__send_socket(message.encode("utf-8"))
         time.sleep(2)
-    except Exception as e:
+    except Exception:
       print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
 
   def start(self):
