@@ -24,19 +24,19 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmessage.proto\x12\x15sistemas_distribuidos\"N\n\rMessageParams\x12.\n\x04type\x18\x03 \x01(\x0e\x32 .sistemas_distribuidos.ParamType\x12\r\n\x05value\x18\x04 \x01(\x03\"q\n\x07Message\x12\x30\n\x04type\x18\x05 \x01(\x0e\x32\".sistemas_distribuidos.MessageType\x12\x34\n\x06params\x18\x06 \x03(\x0b\x32$.sistemas_distribuidos.MessageParams*#\n\x0bMessageType\x12\x14\n\x10\x44\x45VICE_DISCOVERY\x10\x01*\x1a\n\tParamType\x12\r\n\tDEVICE_IP\x10\x02')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmessage.proto\x12\x15sistemas_distribuidos\"k\n\rMessageParams\x12\x33\n\x04type\x18\x01 \x01(\x0e\x32 .sistemas_distribuidos.ParamTypeH\x00\x88\x01\x01\x12\x12\n\x05value\x18\x02 \x01(\x03H\x01\x88\x01\x01\x42\x07\n\x05_typeB\x08\n\x06_value\"\x7f\n\x07Message\x12\x35\n\x04type\x18\x01 \x01(\x0e\x32\".sistemas_distribuidos.MessageTypeH\x00\x88\x01\x01\x12\x34\n\x06params\x18\x02 \x03(\x0b\x32$.sistemas_distribuidos.MessageParamsB\x07\n\x05_type*#\n\x0bMessageType\x12\x14\n\x10\x44\x45VICE_DISCOVERY\x10\x00*\x1a\n\tParamType\x12\r\n\tDEVICE_IP\x10\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'message_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_MESSAGETYPE']._serialized_start=235
-  _globals['_MESSAGETYPE']._serialized_end=270
-  _globals['_PARAMTYPE']._serialized_start=272
-  _globals['_PARAMTYPE']._serialized_end=298
+  _globals['_MESSAGETYPE']._serialized_start=278
+  _globals['_MESSAGETYPE']._serialized_end=313
+  _globals['_PARAMTYPE']._serialized_start=315
+  _globals['_PARAMTYPE']._serialized_end=341
   _globals['_MESSAGEPARAMS']._serialized_start=40
-  _globals['_MESSAGEPARAMS']._serialized_end=118
-  _globals['_MESSAGE']._serialized_start=120
-  _globals['_MESSAGE']._serialized_end=233
+  _globals['_MESSAGEPARAMS']._serialized_end=147
+  _globals['_MESSAGE']._serialized_start=149
+  _globals['_MESSAGE']._serialized_end=276
 # @@protoc_insertion_point(module_scope)
