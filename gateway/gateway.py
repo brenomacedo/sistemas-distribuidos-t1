@@ -1,6 +1,7 @@
 import socket
 import time
 from threading import Thread
+from models import message_pb2
 
 
 class Gateway:
@@ -30,9 +31,9 @@ class Gateway:
 
   def __discover_devices(self):
     sock = socket.socket(
-      socket.AF_INET, # familia de ips ipv4 
-      socket.SOCK_DGRAM, # socket baseado em datagramas (UDP)
-      socket.IPPROTO_UDP # protocolo UDP
+      socket.AF_INET,  # familia de ips ipv4
+      socket.SOCK_DGRAM,  # socket baseado em datagramas (UDP)
+      socket.IPPROTO_UDP,  # protocolo UDP
     )
 
     sock.setsockopt(
@@ -41,11 +42,17 @@ class Gateway:
 
     try:
       while True:
-        message = "Mensagem do Gateway".encode("utf-8")
+        message = message_pb2.Message()
+        message.type = message_pb2.DEVICE_DISCOVERY
+        serialized_message = message.SerializeToString()
+
         print(
-          f"Enviando: {message.decode('utf-8')} para {self.multicast_group_ip}:{self.multicast_group_port}"
+          f"Enviando: mensagem de descoberta para {self.multicast_group_ip}:{self.multicast_group_port}"
         )
-        sock.sendto(message, (self.multicast_group_ip, self.multicast_group_port))
+        sock.sendto(
+          serialized_message,
+          (self.multicast_group_ip, self.multicast_group_port),
+        )
         time.sleep(self.discover_interval_in_seconds)
     except Exception as e:
       print(f"Erro na thread de envio: {e}")
@@ -54,8 +61,8 @@ class Gateway:
 
   def __listen_messages(self):
     server_socket = socket.socket(
-      socket.AF_INET, # familia de ips ipv4 
-      socket.SOCK_STREAM # socket orientado a conexão (TCP)
+      socket.AF_INET,  # familia de ips ipv4
+      socket.SOCK_STREAM,  # socket orientado a conexão (TCP)
     )
     server_socket.bind((self.tcp_listen_ip, self.tcp_listen_port))
     server_socket.listen(10)
@@ -88,6 +95,3 @@ class Gateway:
         time.sleep(1)
     except KeyboardInterrupt:
       print("\nEncerrando o gateway.")
-
-gateway = Gateway()
-gateway.start()
