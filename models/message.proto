@@ -1,6 +1,21 @@
 syntax = "proto3";
 
-message ChatMessage {
-    string sender = 1;
-    string message = 2;
+package sistemas_distribuidos;
+
+enum MessageType {
+  DEVICE_DISCOVERY = 1;
+}
+
+enum ParamType {
+  DEVICE_IP = 2;
+}
+
+message MessageParams {
+  optional ParamType type = 3;
+  optional int64 value = 4;
+}
+
+message Message {
+  optional MessageType type = 5;
+  repeated MessageParams params = 6;
 }

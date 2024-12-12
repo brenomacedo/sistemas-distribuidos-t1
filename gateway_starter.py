@@ -1,4 +1,4 @@
-from gateway import gateway
+from gateway.gateway import Gateway
 
-gayteway = gateway.Gateway()
-gayteway.start()
+gateway = Gateway()
+gateway.start()

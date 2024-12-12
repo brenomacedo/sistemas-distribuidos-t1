@@ -4,10 +4,11 @@ import time
 import random
 from models import message_pb2
 from threading import Thread
+from models import message_pb2
 
 
 class ArCondicionado:
-  gateway_ip: str # | None = None
+  gateway_ip: str  # | None = None
 
   def __init__(
     self,
@@ -21,12 +22,10 @@ class ArCondicionado:
     self.multicast_group_port = multicast_group_port
     self.tcp_listen_ip = tcp_listen_ip
     self.tcp_listen_port = tcp_listen_port
-    self.gateway_ip = None,
+    self.gateway_ip = None
     self.gateway_port = gateway_port
 
-  def __send_socket(
-    self, message: str, ip_address = None, port = None
-  ):
+  def __send_socket(self, message: str, ip_address=None, port=None):
     ip_address: str = ip_address or self.gateway_ip
     port = port or self.gateway_port
 
@@ -51,7 +50,11 @@ class ArCondicionado:
     data, address = sock.recvfrom(1024)
     self.gateway_ip = address[0]
     print("GATEWAY IP SETADO:", self.gateway_ip)
-    print(f"Mensagem recebida do gateway {address}: {data.decode('utf-8')}")
+    print(f"Mensagem recebida do gateway {address}")
+
+    message = message_pb2.Message()
+    message.ParseFromString(data)
+    print(message.type)
     sock.close()
 
     # Substituir aqui a mensagem por uma codificacao de protobuff
@@ -90,7 +93,11 @@ class ArCondicionado:
   def send_temperature(self):
     try:
       while True:
-        message = "Temperatura nova do ar condicionado: " + str(random.randrange(18, 26)) + " graus celsius"
+        message = (
+          "Temperatura nova do ar condicionado: "
+          + str(random.randrange(18, 26))
+          + " graus celsius"
+        )
         self.__send_socket(message)
         time.sleep(2)
     except Exception:
@@ -98,7 +105,7 @@ class ArCondicionado:
 
   def start(self):
     sender_thread_is_started = False
-    
+
     # Iniciar threads para envio e recepção
     listen_messages_thread = Thread(target=self.discover_and_listen, daemon=True)
     send_temperature_thread = Thread(target=self.send_temperature, daemon=True)
@@ -110,7 +117,7 @@ class ArCondicionado:
     try:
       while True:
         time.sleep(1)
-        if self.gateway_ip[0] != None and not sender_thread_is_started:
+        if self.gateway_ip is None and not sender_thread_is_started:
           send_temperature_thread.start()
           print("Thread 2 iniciada")
           sender_thread_is_started = True

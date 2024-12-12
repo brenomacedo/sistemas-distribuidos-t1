@@ -1,4 +1,4 @@
-from devices.ar_condicionado import ar_condicionado
+from devices.ar_condicionado import ArCondicionado
 
-device = ar_condicionado.ArCondicionado()
-device.start()
+ar_condicionado = ArCondicionado()
+ar_condicionado.start()
