@@ -22,16 +22,6 @@ class Gateway:
     self.tcp_listen_port = tcp_listen_port
     self.discover_interval_in_seconds = discover_interval_in_seconds
 
-  # def __send_socket(self, message: str, ip_address: str, port: int | None = None):
-  #   port = port or self.tcp_listen_port
-
-  #   client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  #   client_socket.connect((ip_address, port))
-
-  #   message = "Olá, servidor!".encode("utf-8")
-  #   client_socket.sendall(message)
-  #   client_socket.close()
-
   def __discover_devices(self):
     sock = socket.socket(
       socket.AF_INET,  # familia de ips ipv4
