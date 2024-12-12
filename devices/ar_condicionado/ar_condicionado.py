@@ -4,7 +4,6 @@ import time
 import random
 from models import message_pb2
 from threading import Thread
-from models import message_pb2
 
 
 class ArCondicionado:
@@ -25,7 +24,7 @@ class ArCondicionado:
     self.gateway_ip = None
     self.gateway_port = gateway_port
 
-  def __send_socket(self, message: str, ip_address=None, port=None):
+  def __send_socket(self, message: bytes, ip_address=None, port=None):
     ip_address: str = ip_address or self.gateway_ip
     port = port or self.gateway_port
 
@@ -35,7 +34,7 @@ class ArCondicionado:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((ip_address, port))
 
-    client_socket.sendall(message.encode("utf-8"))
+    client_socket.sendall(message)
     client_socket.close()
 
   def __discover_gateway(self):
@@ -54,12 +53,16 @@ class ArCondicionado:
 
     message = message_pb2.Message()
     message.ParseFromString(data)
-    print(message.type)
     sock.close()
 
     # Substituir aqui a mensagem por uma codificacao de protobuff
-    # das informacoes do device
-    self.__send_socket("Mensagem de autenticacao do device")
+    # das informacoes do device'
+    message.type = message_pb2.REGISTER_DEVICE
+    param = message.params.add()
+    param.type = message_pb2.DEVICE_TYPE
+    param.value = message_pb2.AIR_CONDITIONING
+    serialized_message = message.SerializeToString()
+    self.__send_socket(serialized_message)
 
   def __listen_messages(self):
     device_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -79,7 +82,7 @@ class ArCondicionado:
 
           # decoded_data = data.decode("utf-8")
           # print(f"Dado recebido do gateway: {decoded_data}")
-          
+
           # IF DATA.TIPO == MUDAR_TEMPERATURA, MUDAR A TEMPERATURA DO AR CONDICIONADO
 
         gateway_socket.close()
@@ -98,9 +101,9 @@ class ArCondicionado:
           + str(random.randrange(18, 26))
           + " graus celsius"
         )
-        self.__send_socket(message)
+        self.__send_socket(message.encode("utf-8"))
         time.sleep(2)
-    except Exception:
+    except Exception as e:
       print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
 
   def start(self):

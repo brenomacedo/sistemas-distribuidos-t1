@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmessage.proto\x12\x15sistemas_distribuidos\"k\n\rMessageParams\x12\x33\n\x04type\x18\x03 \x01(\x0e\x32 .sistemas_distribuidos.ParamTypeH\x00\x88\x01\x01\x12\x12\n\x05value\x18\x04 \x01(\x03H\x01\x88\x01\x01\x42\x07\n\x05_typeB\x08\n\x06_value\"\x7f\n\x07Message\x12\x35\n\x04type\x18\x05 \x01(\x0e\x32\".sistemas_distribuidos.MessageTypeH\x00\x88\x01\x01\x12\x34\n\x06params\x18\x06 \x03(\x0b\x32$.sistemas_distribuidos.MessageParamsB\x07\n\x05_type*0\n\x0bMessageType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x14\n\x10\x44\x45VICE_DISCOVERY\x10\x01*(\n\tParamType\x12\x0c\n\x08UNKNOWN2\x10\x00\x12\r\n\tDEVICE_IP\x10\x02\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmessage.proto\x12\x15sistemas_distribuidos\"k\n\rMessageParams\x12\x33\n\x04type\x18\x01 \x01(\x0e\x32 .sistemas_distribuidos.ParamTypeH\x00\x88\x01\x01\x12\x12\n\x05value\x18\x02 \x01(\x03H\x01\x88\x01\x01\x42\x07\n\x05_typeB\x08\n\x06_value\"\x7f\n\x07Message\x12\x35\n\x04type\x18\x01 \x01(\x0e\x32\".sistemas_distribuidos.MessageTypeH\x00\x88\x01\x01\x12\x34\n\x06params\x18\x02 \x03(\x0b\x32$.sistemas_distribuidos.MessageParamsB\x07\n\x05_type*8\n\x0bMessageType\x12\x14\n\x10\x44\x45VICE_DISCOVERY\x10\x00\x12\x13\n\x0fREGISTER_DEVICE\x10\x01*+\n\tParamType\x12\r\n\tDEVICE_IP\x10\x00\x12\x0f\n\x0b\x44\x45VICE_TYPE\x10\x01*/\n\nDeviceType\x12\x14\n\x10\x41IR_CONDITIONING\x10\x00\x12\x0b\n\x07\x41\x42\x41JOUR\x10\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,9 +32,11 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'message_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_MESSAGETYPE']._serialized_start=278
-  _globals['_MESSAGETYPE']._serialized_end=326
-  _globals['_PARAMTYPE']._serialized_start=328
-  _globals['_PARAMTYPE']._serialized_end=368
+  _globals['_MESSAGETYPE']._serialized_end=334
+  _globals['_PARAMTYPE']._serialized_start=336
+  _globals['_PARAMTYPE']._serialized_end=379
+  _globals['_DEVICETYPE']._serialized_start=381
+  _globals['_DEVICETYPE']._serialized_end=428
   _globals['_MESSAGEPARAMS']._serialized_start=40
   _globals['_MESSAGEPARAMS']._serialized_end=147
   _globals['_MESSAGE']._serialized_start=149

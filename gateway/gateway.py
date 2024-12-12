@@ -13,6 +13,9 @@ class Gateway:
     tcp_listen_port: int = 5008,
     discover_interval_in_seconds: int = 5,
   ):
+    self.device_counter = 0
+    self.registered_devices = []
+
     self.multicast_group_ip = multicast_group_ip
     self.multicast_group_port = multicast_group_port
     self.tcp_listen_ip = tcp_listen_ip
@@ -74,9 +77,19 @@ class Gateway:
 
         data = client_socket.recv(1024)
         if data:
-          decoded_data = data.decode("utf-8")
-          print(f"Dado recebido: {decoded_data}")
-          # IF DATA.TIPO == AUTENTICACAO, REGISTRE O IP DO DEVICE E SUAS INFORMACOES
+          message = message_pb2.Message()
+          message.ParseFromString(data)
+          if message.type == message_pb2.REGISTER_DEVICE:
+            print(f"Dispositivo pedindo para se registrar: {client_address}")
+            self.device_counter += 1
+            new_device = {
+              "id": self.device_counter,
+              "ip_address": client_address,
+              "type": message.params[0].type,
+            }
+
+            self.registered_devices.append(new_device)
+            print(self.registered_devices)
 
         client_socket.close()
     finally:
