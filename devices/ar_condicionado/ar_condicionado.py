@@ -2,6 +2,7 @@ import socket
 import struct
 import time
 import random
+from models import message_pb2
 from threading import Thread
 from models import message_pb2
 
@@ -72,8 +73,13 @@ class ArCondicionado:
 
         data = gateway_socket.recv(1024)
         if data:
-          decoded_data = data.decode("utf-8")
-          print(f"Dado recebido do gateway: {decoded_data}")
+          chat_message = message_pb2.ChatMessage()
+          chat_message.ParseFromString(data)
+          print(f"Mensagem recebida de {chat_message.sender}: {chat_message.message}")
+
+          # decoded_data = data.decode("utf-8")
+          # print(f"Dado recebido do gateway: {decoded_data}")
+          
           # IF DATA.TIPO == MUDAR_TEMPERATURA, MUDAR A TEMPERATURA DO AR CONDICIONADO
 
         gateway_socket.close()

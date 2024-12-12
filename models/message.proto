@@ -3,11 +3,13 @@ syntax = "proto3";
 package sistemas_distribuidos;
 
 enum MessageType {
-  DEVICE_DISCOVERY = 0;
+  UNKNOWN = 0;
+  DEVICE_DISCOVERY = 1;
 }
 
 enum ParamType {
-  DEVICE_IP = 0;
+  UNKNOWN2 = 0;
+  DEVICE_IP = 2;
 }
 
 message MessageParams {
