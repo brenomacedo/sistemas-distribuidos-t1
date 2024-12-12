@@ -25,7 +25,7 @@ class ArCondicionado:
     self.gateway_ip = None
     self.gateway_port = gateway_port
 
-  def __send_socket(self, message: str, ip_address=None, port=None):
+  def __send_socket(self, message, ip_address=None, port=None):
     ip_address: str = ip_address or self.gateway_ip
     port = port or self.gateway_port
 
