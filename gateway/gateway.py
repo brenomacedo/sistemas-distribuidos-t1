@@ -1,7 +1,7 @@
 import socket
 import time
 from threading import Thread
-
+import models.message_pb2 as message_pb2
 
 class Gateway:
   def __init__(
@@ -41,11 +41,26 @@ class Gateway:
 
     try:
       while True:
-        message = "Mensagem do Gateway".encode("utf-8")
-        print(
-          f"Enviando: {message.decode('utf-8')} para {self.multicast_group_ip}:{self.multicast_group_port}"
-        )
-        sock.sendto(message, (self.multicast_group_ip, self.multicast_group_port))
+
+        # Cria uma mensagem ChatMessage
+        chat_message = message_pb2.ChatMessage()
+        chat_message.sender = "Cliente1"
+        chat_message.message = "Olá, servidor!"
+
+        # Serializa a mensagem
+        serialized_data = chat_message.SerializeToString()
+
+        # Envia a mensagem
+        # client_socket.sendall(serialized_data)
+
+        # message = "Mensagem do Gateway".encode("utf-8")
+        # print(
+        #   f"Enviando: {message.decode('utf-8')} para {self.multicast_group_ip}:{self.multicast_group_port}"
+        # )
+        # sock.sendto(message, (self.multicast_group_ip, self.multicast_group_port))
+        
+        sock.sendto(serialized_data, (self.multicast_group_ip, self.multicast_group_port))
+        print("Mensagem enviada!")
         time.sleep(self.discover_interval_in_seconds)
     except Exception as e:
       print(f"Erro na thread de envio: {e}")
@@ -89,5 +104,5 @@ class Gateway:
     except KeyboardInterrupt:
       print("\nEncerrando o gateway.")
 
-gateway = Gateway()
-gateway.start()
+# gateway = Gateway()
+# gateway.start()
