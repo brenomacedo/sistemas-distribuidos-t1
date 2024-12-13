@@ -7,8 +7,6 @@ from threading import Thread
 
 
 class ArCondicionado:
-  gateway_ip: str  # | None = None
-
   def __init__(
     self,
     multicast_group_ip: str = "224.1.1.1",
@@ -17,6 +15,9 @@ class ArCondicionado:
     tcp_listen_port: int = 5006,
     gateway_port: str = 5008,
   ):
+    self.temperature = 25
+    self.powered_on = True
+
     self.multicast_group_ip = multicast_group_ip
     self.multicast_group_port = multicast_group_port
     self.tcp_listen_ip = tcp_listen_ip
@@ -58,9 +59,7 @@ class ArCondicionado:
     # Substituir aqui a mensagem por uma codificacao de protobuff
     # das informacoes do device'
     message.type = message_pb2.REGISTER_DEVICE
-    param = message.params.add()
-    param.type = message_pb2.DEVICE_TYPE
-    param.value = message_pb2.AIR_CONDITIONING
+    message.params.append(message_pb2.AIR_CONDITIONING)
     serialized_message = message.SerializeToString()
     self.__send_socket(serialized_message)
 
@@ -76,14 +75,15 @@ class ArCondicionado:
 
         data = gateway_socket.recv(1024)
         if data:
-          chat_message = message_pb2.ChatMessage()
-          chat_message.ParseFromString(data)
-          print(f"Mensagem recebida de {chat_message.sender}: {chat_message.message}")
+          message = message_pb2.Message()
+          message.ParseFromString(data)
 
-          # decoded_data = data.decode("utf-8")
-          # print(f"Dado recebido do gateway: {decoded_data}")
-
-          # IF DATA.TIPO == MUDAR_TEMPERATURA, MUDAR A TEMPERATURA DO AR CONDICIONADO
+          if message.type == message_pb2.TURN_ON:
+            self.powered_on = True
+          elif message.type == message_pb2.TURN_OFF:
+            self.powered_on = False
+          elif message.type == message_pb2.CHANGE_TEMPERATURE:
+            self.temperature = message.params[0]
 
         gateway_socket.close()
     finally:
@@ -96,14 +96,17 @@ class ArCondicionado:
   def send_temperature(self):
     try:
       while True:
-        message = (
-          "Temperatura nova do ar condicionado: "
-          + str(random.randrange(18, 26))
-          + " graus celsius"
-        )
-        self.__send_socket(message.encode("utf-8"))
-        time.sleep(2)
-    except Exception:
+        if self.powered_on:
+          new_temperature = random.randrange(self.temperature - 1, self.temperature + 1)
+          message = message_pb2.Message()
+          message.type = message_pb2.TEMPERATURE_INFO
+          message.params.append(new_temperature)
+          serialized_message = message.SerializeToString()
+
+          self.__send_socket(serialized_message)
+          time.sleep(2)
+    except Exception as e:
+      print(e)
       print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
 
   def start(self):

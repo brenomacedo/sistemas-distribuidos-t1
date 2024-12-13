@@ -11,6 +11,7 @@ class Gateway:
     multicast_group_port: int = 5005,
     tcp_listen_ip: str = "0.0.0.0",
     tcp_listen_port: int = 5008,
+    devices_port: int = 5006,
     discover_interval_in_seconds: int = 5,
   ):
     self.device_counter = 0
@@ -20,7 +21,20 @@ class Gateway:
     self.multicast_group_port = multicast_group_port
     self.tcp_listen_ip = tcp_listen_ip
     self.tcp_listen_port = tcp_listen_port
+    self.devices_port = devices_port
     self.discover_interval_in_seconds = discover_interval_in_seconds
+
+  def __send_socket(self, message: bytes, ip_address=None, port=None):
+    port = port or self.devices_port
+
+    if ip_address is None:
+      return
+
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((ip_address, port))
+
+    client_socket.sendall(message)
+    client_socket.close()
 
   def __discover_devices(self):
     sock = socket.socket(
@@ -63,7 +77,6 @@ class Gateway:
     try:
       while True:
         client_socket, client_address = server_socket.accept()
-        print(f"Conexão estabelecida com {client_address}")
 
         data = client_socket.recv(1024)
         if data:
@@ -75,11 +88,15 @@ class Gateway:
             new_device = {
               "id": self.device_counter,
               "ip_address": client_address,
-              "type": message.params[0].type,
+              "type": message.params[0],
             }
 
             self.registered_devices.append(new_device)
-            print(self.registered_devices)
+          elif message.type == message_pb2.TEMPERATURE_INFO:
+            print(
+              f"Temperatura do ar condicionado recebida! {message.params[0]} graus!"
+            )
+            # Repassar os dados para o cliente aqui
 
         client_socket.close()
     finally:
@@ -92,6 +109,15 @@ class Gateway:
 
     sender_thread.start()
     receiver_thread.start()
+
+    # TESTAR ENVIO DE MENSAGEM
+    time.sleep(10)
+    message = message_pb2.Message()
+    message.type = message_pb2.CHANGE_TEMPERATURE
+    print("Enviando mensagem mudando temperatura para 16 graus")
+    message.params.append(16)
+    serialized_message = message.SerializeToString()
+    self.__send_socket(serialized_message, "10.0.0.106")
 
     try:
       while True:
