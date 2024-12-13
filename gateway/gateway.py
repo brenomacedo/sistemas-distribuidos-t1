@@ -117,7 +117,7 @@ class Gateway:
     print("Enviando mensagem mudando temperatura para 16 graus")
     message.params.append(16)
     serialized_message = message.SerializeToString()
-    self.__send_socket(serialized_message, "10.0.0.106")
+    self.__send_socket(serialized_message, "localhost")
 
     try:
       while True:

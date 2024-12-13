@@ -9,12 +9,15 @@ from abc import ABC, abstractmethod
 class Device(ABC):
     def __init__(
         self,
+        type,
         multicast_group_ip="224.1.1.1",
         multicast_group_port=5005,
         tcp_listen_ip="0.0.0.0",
         tcp_listen_port=5006,
         gateway_port=5008,
+        # precisa ser um ENUM equivalente a algum definido no message.proto
     ):
+        self.type = type
         self.multicast_group_ip = multicast_group_ip
         self.multicast_group_port = multicast_group_port
         self.tcp_listen_ip = tcp_listen_ip
@@ -28,7 +31,6 @@ class Device(ABC):
         pass
 
     def __send_socket(self, message: bytes, ip_address=None, port=None):
-        print("MESSAGE", message)
         ip_address = ip_address or self.gateway_ip
         port = port or self.gateway_port
 
@@ -59,8 +61,11 @@ class Device(ABC):
         print(f"Mensagem recebida: {message.type}")
         sock.close()
 
-        # Enviar uma mensagem de autenticação do dispositivo
-        self.__send_socket("Mensagem de autenticacao do device".encode())
+
+        message.type = message_pb2.REGISTER_DEVICE
+        message.params.append(self.type)
+        serialized_auth_message = message.SerializeToString() 
+        self.__send_socket(serialized_auth_message)
 
     def __listen_messages(self):
         device_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,9 +79,9 @@ class Device(ABC):
 
                 data = gateway_socket.recv(1024)
                 if data:
-                    message = message_pb2.ChatMessage()
+                    message = message_pb2.Message()
                     message.ParseFromString(data)
-                    self.handle_message(message)  # Chama o método abstrato
+                    self.handle_message(message) # Chama o método abstrato
 
                 gateway_socket.close()
         finally:
@@ -112,25 +117,51 @@ class Device(ABC):
 
 # Classe específica para Ar Condicionado
 class ArCondicionado(Device):
+    def __init__(self):
+        super().__init__(type = message_pb2.AIR_CONDITIONING)
+        self.temperature = 25
+        self.powered_on = True
+    
     def handle_message(self, message):
-        print(f"Mensagem recebida pelo Ar Condicionado: {message.sender} -> {message.message}")
-        # Exemplo: alterar temperatura com base no tipo de mensagem
-        if "temperatura" in message.message.lower():
-            print("Alterando temperatura...")
+        if message.type == message_pb2.TURN_ON:
+            self.powered_on = True
+        elif message.type == message_pb2.TURN_OFF:
+            self.powered_on = False
+        elif message.type == message_pb2.CHANGE_TEMPERATURE:
+            self.temperature = message.params[0]
+        # print(f"Mensagem recebida pelo Ar Condicionado: {message.sender} -> {message.message}")
+        # # Exemplo: alterar temperatura com base no tipo de mensagem
+        # if "temperatura" in message.message.lower():
+        #     print("Alterando temperatura...")
 
     def send_status(self):
         try:
             while True:
-                message = (
-                    "Temperatura nova do ar condicionado: "
-                    + str(random.randrange(18, 26))
-                    + " graus celsius"
-                ).encode()
-                self._Device__send_socket(message)
-                time.sleep(2)
+                if self.powered_on:
+                    new_temperature = random.randrange(self.temperature - 1, self.temperature + 1)
+                    message = message_pb2.Message()
+                    message.type = message_pb2.TEMPERATURE_INFO
+                    message.params.append(new_temperature)
+                    serialized_message = message.SerializeToString()
+
+                    self._Device__send_socket(serialized_message)
+                    time.sleep(2)
         except Exception as e:
-            print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
             print(e)
+            print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
+
+        # try:
+        #     while True:
+        #         message = (
+        #             "Temperatura nova do ar condicionado: "
+        #             + str(random.randrange(18, 26))
+        #             + " graus celsius"
+        #         ).encode()
+        #         self._Device__send_socket(message)
+        #         time.sleep(2)
+        # except Exception as e:
+        #     print("Erro ao tentar enviar informacoes sobre a temperatura do ar condicionado.")
+        #     print(e)
 
 # Classe específica para outro dispositivo, ex.: Ventilador
 # class Ventilador(Device):
