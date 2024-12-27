@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+		<title>Gamer Room!</title>
 		<style>
 			body { margin: 0; }
 		</style>
@@ -14,8 +14,62 @@
               }
             }
         </script>
-	</head>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> -->
+
+    </head>
 	<body>
+
+        <div id="overlay" class="fixed h-screen w-screen" style="pointer-events: none;">
+            <button id="menuButton" style="pointer-events: auto;" class="absolute top-4 right-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-16 text-neutral-800 hover:text-white">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>                  
+            </button>
+            
+            <div id="menu" class="w-full flex justify-center items-center h-60">
+                <!-- conteudo variavel aqui -->
+                <div id="orange-control" class="relative border-solid border-4 border-black bg-orange-300 rounded-3xl w-96 h-[30rem]" style="pointer-events: auto;">
+                    <div id="x-button" class="absolute top-4 left-4 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hover:text-white size-12">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <div class="flex flex-col justify-center items-center mx-8 my-20 gap-2">
+                        <a class="text-2xl underline text-blue-600 hover:text-white" href="/front-end/docs.html">Documentação</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            /* Inicialmente, o menu fica fora da tela */
+            #menu {
+                position: fixed;  /* Fixa o menu na tela */
+                bottom: -100%;    /* Inicialmente, está fora da tela (embaixo) */
+                transition: bottom 0.5s ease-in-out;  /* Transição suave para o menu aparecer */
+            }
+        </style>
+
+        <script>
+            const menu = document.getElementById('menu');
+
+            const toggle = () => {
+                // Alterna o menu entre visível e fora da tela
+                if (menu.style.bottom === '0px') {
+                    menu.style.bottom = '-100%';  // Faz o menu desaparecer
+                } else {
+                    menu.style.bottom = '0px';   // Faz o menu aparecer
+                }
+            }
+
+            const menuButton = document.getElementById('menuButton');
+            const closeButton = document.getElementById('x-button');
+            
+            menuButton.addEventListener('click', toggle);
+            closeButton.addEventListener('click', toggle);
+        </script>
+
 		<script type="module">
             import * as THREE from 'three';
             import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
@@ -257,7 +311,7 @@
                 const textGeometry = new TextGeometry(tempText, {
                     font: font,
                     size: 0.23,
-                    height: 0.01,
+                    depth: 0.01,
                 });
                 const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // Cor do texto
                 const temperatureText = new THREE.Mesh(textGeometry, textMaterial);
@@ -272,7 +326,7 @@
                     temperatureText.geometry = new TextGeometry(`${currentTemperature}°C`, {
                         font: font,
                         size: 0.23,
-                        height: 0.01,
+                        depth: 0.01,
                     });
                 }, 3000); // Atualiza a temperatura a cada 3 segundos
             });
@@ -301,11 +355,48 @@
             const controls = new OrbitControls( camera, renderer.domElement );
             controls.update();
 
+            // Raycaster para detectar cliques
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            // Função para lidar com o clique
+            function onMouseClick(event) {
+                // Converte as coordenadas do mouse para o intervalo [-1, 1]
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                // Atualiza o raycaster com a posição do mouse
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = {
+                    'ar-condicionado': raycaster.intersectObject(acBody),
+                    'caixa-de-som':    raycaster.intersectObject(box),
+                    'lampada':         raycaster.intersectObject(bulb),
+                    'televisao':       raycaster.intersectObject(monitor),
+                }
+
+                let objetoMaisPerto = null;
+
+                for (let key in intersects) {
+                    if (
+                        (intersects[key].length > 0 && !objetoMaisPerto) ||
+                        (intersects[key].length > 0 && intersects[objetoMaisPerto][0]['distance'] > intersects[key][0]['distance'])
+                    ) {
+                        objetoMaisPerto = key;
+                    }
+                }
+
+                if (objetoMaisPerto) {
+                    alert('objeto mais perto: ' + objetoMaisPerto)
+                }
+            }
+
             // Animation Loop
             function animate() {
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);
             }
+
+            window.addEventListener('click', onMouseClick, false);
 
             animate();
 
