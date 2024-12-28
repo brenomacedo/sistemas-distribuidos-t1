@@ -80,23 +80,22 @@ class Gateway:
 
         data = client_socket.recv(1024)
         if data:
-          message = message_pb2.Message()
+          message = message_pb2.ForwardedMessage()
           message.ParseFromString(data)
-          if message.type == message_pb2.REGISTER_DEVICE:
+          if message.content.type == message_pb2.REGISTER_DEVICE:
             print(f"Dispositivo pedindo para se registrar: {client_address}")
             self.device_counter += 1
             new_device = {
               "id": self.device_counter,
               "ip_address": client_address,
-              "type": message.params[0],
+              "type": message.content.params[0],
             }
 
             self.registered_devices.append(new_device)
-          elif message.type == message_pb2.TEMPERATURE_INFO:
+          elif message.content.type == message_pb2.TEMPERATURE_INFO:
             print(
-              f"Temperatura do ar condicionado recebida! {message.params[0]} graus!"
+              f"Temperatura do ar condicionado recebida! {message.content.params[0]} graus!"
             )
-            # Repassar os dados para o cliente aqui
 
         client_socket.close()
     finally:
