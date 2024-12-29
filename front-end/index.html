@@ -28,15 +28,58 @@
             </button>
             
             <div id="menu" class="w-full flex justify-center items-center h-60">
-                <!-- conteudo variavel aqui -->
                 <div id="orange-control" class="relative border-solid border-4 border-black bg-orange-300 rounded-3xl w-96 h-[30rem]" style="pointer-events: auto;">
                     <div id="x-button" class="absolute top-4 left-4 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hover:text-white size-12">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </div>
-                    <div class="flex flex-col justify-center items-center mx-8 my-20 gap-2">
+
+                    <div id="submenu-principal" class="hidden flex flex-col justify-center items-center mx-8 my-20 gap-2">
                         <a class="text-2xl underline text-blue-600 hover:text-white" href="/front-end/docs.html">Documentação</a>
+                    </div>
+
+                    <div id="submenu-ar-condicionado" class="hidden flex flex-col justify-center items-center mx-8 my-20 gap-2">
+                        <div class="flex gap-4">
+                            <button id="decrease-temp" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                Diminuir Temperatura
+                            </button>
+                            <button id="increase-temp" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                Aumentar Temperatura
+                            </button>
+                        </div>
+                        <button id="toggle-ac" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            Ligar/Desligar
+                        </button>
+                    </div>
+
+                    <div id="submenu-caixa-de-som" class="hidden flex flex-col justify-center items-center mx-8 my-20 gap-2">
+                        <button id="toggle-speaker" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            Ligar/Desligar
+                        </button>
+                        <div class="flex flex-col gap-2">
+                            <button id="play-jazz" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                Tocar Jazz
+                            </button>
+                            <button id="play-lofi" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                                Tocar Lofi
+                            </button>
+                            <button id="play-mozart" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+                                Tocar Mozart
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="submenu-televisao" class="hidden flex flex-col justify-center items-center mx-8 my-20 gap-2">
+                        <p class="text-lg font-bold">Televisão - Luzes Gamer</p>
+                        <div class="grid grid-cols-3 gap-4">
+                            <button id="light-purple" class="w-16 h-16 rounded-full bg-[#7D3AC1] hover:ring-4 hover:ring-[#7D3AC1]/50"></button>
+                            <button id="light-blue" class="w-16 h-16 rounded-full bg-[#1E90FF] hover:ring-4 hover:ring-[#1E90FF]/50"></button>
+                            <button id="light-pink" class="w-16 h-16 rounded-full bg-[#FF69B4] hover:ring-4 hover:ring-[#FF69B4]/50"></button>
+                            <button id="light-green" class="w-16 h-16 rounded-full bg-[#39FF14] hover:ring-4 hover:ring-[#39FF14]/50"></button>
+                            <button id="light-red" class="w-16 h-16 rounded-full bg-[#FF4500] hover:ring-4 hover:ring-[#FF4500]/50"></button>
+                            <button id="light-yellow" class="w-16 h-16 rounded-full bg-[#FFD700] hover:ring-4 hover:ring-[#FFD700]/50"></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -49,26 +92,11 @@
                 bottom: -100%;    /* Inicialmente, está fora da tela (embaixo) */
                 transition: bottom 0.5s ease-in-out;  /* Transição suave para o menu aparecer */
             }
-        </style>
 
-        <script>
-            const menu = document.getElementById('menu');
-
-            const toggle = () => {
-                // Alterna o menu entre visível e fora da tela
-                if (menu.style.bottom === '0px') {
-                    menu.style.bottom = '-100%';  // Faz o menu desaparecer
-                } else {
-                    menu.style.bottom = '0px';   // Faz o menu aparecer
-                }
+            .hidden {
+                display: none;
             }
-
-            const menuButton = document.getElementById('menuButton');
-            const closeButton = document.getElementById('x-button');
-            
-            menuButton.addEventListener('click', toggle);
-            closeButton.addEventListener('click', toggle);
-        </script>
+        </style>
 
 		<script type="module">
             import * as THREE from 'three';
@@ -361,6 +389,9 @@
 
             // Função para lidar com o clique
             function onMouseClick(event) {
+
+                if (event.target !== renderer.domElement) return;
+
                 // Converte as coordenadas do mouse para o intervalo [-1, 1]
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -386,7 +417,7 @@
                 }
 
                 if (objetoMaisPerto) {
-                    alert('objeto mais perto: ' + objetoMaisPerto)
+                    (handleObj[objetoMaisPerto] || handleObj.default)()
                 }
             }
 
@@ -406,6 +437,68 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
+
+            function showSubMenu(subMenuId) {
+                // Seleciona todos os submenus (incluindo #principal)
+                const subMenus = document.querySelectorAll("#orange-control > div");
+                subMenus.forEach(subMenu => {
+                    if (subMenu.id.startsWith("submenu-")) {
+                        subMenu.classList.add("hidden");
+                    }
+                });
+            
+                // Mostra o submenu selecionado
+                const subMenuToShow = document.getElementById(subMenuId);
+                console.log(subMenuToShow);
+                if (subMenuToShow) {
+                    subMenuToShow.classList.remove("hidden");
+                }
+            }
+
+            const menu = document.getElementById('menu');
+
+            const toggle = () => {
+                console.log(menu.style.bottom)
+                // Alterna o menu entre visível e fora da tela
+                if (menu.style.bottom === '0px') {
+                    menu.style.bottom = '-100%';  // Faz o menu desaparecer
+                } else {
+                    menu.style.bottom = '0px';   // Faz o menu aparecer
+                }
+            }
+
+            const togglePrincipal = () => {
+                showSubMenu('submenu-principal');
+                toggle();
+            }
+
+            const menuButton = document.getElementById('menuButton');
+            const closeButton = document.getElementById('x-button');
+            
+            menuButton.addEventListener('click', togglePrincipal);
+            closeButton.addEventListener('click', toggle);
+
+            const handleObj = {
+                "ar-condicionado": () => {
+                    showSubMenu("submenu-ar-condicionado");
+                    toggle();
+                },
+                "caixa-de-som": () => {
+                    showSubMenu("submenu-caixa-de-som");
+                    toggle();
+                },
+                "lampada": () => {
+                    showSubMenu("submenu-lampada");
+                    toggle();
+                },
+                "televisao": () => {
+                    showSubMenu("submenu-televisao");
+                    toggle();
+                },
+                default: () => {
+                    alert("dispositivo não reconhecido.");
+                }
+            }
         </script>
 	</body>
 </html>
