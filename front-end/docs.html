@@ -58,67 +58,39 @@
         // Função para carregar o conteúdo Markdown e exibi-lo
         function showMarkdown() {
             const markdownContent = `
-# Título do Markdown
+# Quarto Gamer Interativo
 
-Este é um exemplo de conteúdo em **Markdown**. Você pode usar títulos, **negrito**, _itálico_ e listas, como mostrado abaixo:
+O Quarto Gamer é um ambiente 3D interativo, simulando um ambiente inteligente. O quarto é composto por diversos dispositivos os quais são interativos, podendo ajustar configurações como iluminação, som e temperatura.
 
-## Lista de Itens
+Esse documento serve como um manual das funcionalidades presentes no ambiente e instruções de como interagir com o quarto.
 
-- Item 1
-- Item 2
-- Item 3
+## Controles da Câmera
 
-Você também pode adicionar links como [Google](https://www.google.com) ou imagens como esta:
+- **Scroll do mouse:** Controla a movimentação da câmera para frente ou para trás (zoom in ou zoom out).
+- **Botão direito do mouse:** Clicando e arrastando com o botão direto, é possível mover a câmera de forma vertical e horizontal.
+- **Botão esquerdo do mouse:** Ao clicar e segurar o botão esquerdo do mouse, é possível girar a câmera, movimentando o mouse.
 
-![Imagem de Exemplo](https://via.placeholder.com/150)
+## Objetos do Quarto Gamer
 
-### Subtítulo
+Abaixo segue uma lista de todos os dispositivos interativos, descrevendo todas as suas funcionalidades. Para acessar as funções de cada dispositivo, basta clicar nele com o botão esquerdo do mouse.
 
-Esse conteúdo em Markdown é convertido para HTML e exibido na tela.
+### Ar-condicionado
 
-**Notas Importantes:**
+- **Ligar/Desligar:** ativa ou desativa o dispositivo.
+- **Diminuir Temperatura:** diminui a temperatura do ar-condicionado.
+- **Aumentar Temperatura:** aumenta a temperatura do ar-condicionado.
 
-- Markdown é fácil de escrever e ler.
-- Pode ser usado para criar documentos, notas, e até mesmo blogs.
+### Caixa de Som
 
-> Isso é uma citação em Markdown.
+- **Ligar/Desligar:** ativa ou desativa o dispositivo.
+- **Tocar Jazz:** configura o som para ser uma música de jazz.
+- **Tocar Lofi:** configura o som para ser uma música lofi.
+- **Tocar Mozart:** configura o som para ser uma música de Mozart.
 
-\`\`\`javascript
-// Código de exemplo
-console.log("Olá, mundo!");
-\`\`\`
+### Televisão
 
-Com isso, podemos ver a simplicidade do Markdown!
+- **Mudança de Luzes:** clique com o botão esquerdo na cor para a qual deseja mudar as luzes.
 
-O **nível federal** refere-se ao âmbito de atuação do governo central do país, ou seja, da **União**. Ele [[Níveis federal, estadual e municipal]]cuida de assuntos de interesse nacional e internacional, como 
-- defesa, 
-- relações exteriores, 
-- emissão de moeda e 
-- administração de bens públicos federais 
-
-O nível federal é exercido pelos três poderes da República: 
-- Executivo (Presidente da República), 
-- Legislativo (Congresso Nacional) e 
-- Judiciário (tribunais superiores e federais).
-
-### Diferença com Outros Níveis:
-
-1. **Nível Estadual**:
-    - Refere-se aos estados da federação (por exemplo, São Paulo, Bahia).
-    - Competências incluem segurança pública (polícias Civil e Militar), gestão de saúde e educação estaduais, e administração de estradas estaduais.
-    - Governado por um governador e um Legislativo estadual (Assembleias Legislativas).
-2. **Nível Municipal**:
-    - Refere-se aos municípios (por exemplo, cidades como Salvador, Curitiba).
-    - Responsável por serviços locais, como coleta de lixo, transporte público, manutenção de vias urbanas e educação básica.
-    - Governado por um prefeito e um Legislativo municipal (Câmara de Vereadores).
-
-### Resumo:
-
-A diferença está na **abrangência das competências**:
-
-- **Federal**: Assuntos nacionais e internacionais.
-- **Estadual**: Questões regionais dentro de cada estado.
-- **Municipal**: Problemas locais e específicos de cada cidade.
             `;
             
             // Converte o Markdown para HTML usando a biblioteca marked.js
