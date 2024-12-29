@@ -88,3 +88,25 @@ async function loadAmbientTemperature() {
         };
     }
 }
+
+async function changeTVColor(color) {
+    try {
+        const response = await fetch(URL + 'change-color', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({ color: color }), 
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao mudar a cor da TV');
+        }
+
+        const data = await response.json();
+        return data; 
+    } catch (error) {
+        console.error('Erro:', error.message);
+        return { error: error.message }; 
+    }
+}

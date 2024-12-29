@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import random
@@ -9,7 +9,8 @@ CORS(app)
 
 ac_status = {
     'isOn': True,
-    'temperature': 25
+    'temperature': 25,
+    'error': False
 }
 
 @app.route('/api/ac-status', methods=['GET'])
@@ -39,6 +40,31 @@ def sensor_temperature():
         "temperature": random.randint(20, 30),
         "error": False
     })
+
+@app.route('/api/change-color', methods=['POST'])
+def change_color():
+    # FAZER ISSO AQUI NO GATEWAY/DISPOSITIVO
+    colors = {
+        "light-purple": "0x7d3ac1",
+        "light-blue": "0x1e90ff",
+        "light-pink": "0xff69b4",
+        "light-green": "0x39ff14",
+        "light-red": "0xff4500",
+        "light-yellow": "0xffd700",
+    }
+    try:
+        data = request.get_json()  
+        color = data.get('color')  
+
+        if not color:
+            return jsonify({"error": "No color parameter provided"}), 400
+        
+        return jsonify({
+            "color": colors[color] 
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
