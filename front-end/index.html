@@ -15,6 +15,7 @@
             }
         </script>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="apicalls.js" defer></script>
         <!-- <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> -->
 
     </head>
@@ -311,64 +312,57 @@
             // ============= CAIXA DE SOM =============
 
             // ============= AR CONDICIONADO =============
-            // Criando a estrutura principal do ar-condicionado
-            const acBodyMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee }); // Cor branca
-            const acBodyGeometry = new THREE.BoxGeometry(3, 1, 1); // Corpo retangular do AC
+           
+            const acBodyMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
+            const acBodyGeometry = new THREE.BoxGeometry(3, 1, 1);
             const acBody = new THREE.Mesh(acBodyGeometry, acBodyMaterial);
-            acBody.position.set(2.2, 2, -4.5); // Ajuste a posição
+            acBody.position.set(2.2, 2, -4.5);
             scene.add(acBody);
 
-            // Criando a grade do ar-condicionado
+           
             const gridMaterial2 = new THREE.MeshStandardMaterial({ color: 0x333333 });
-            const gridGeometry2 = new THREE.PlaneGeometry(2.5, 0.5); // Plano para simular a grade
+            const gridGeometry2 = new THREE.PlaneGeometry(2.5, 0.5);
             const grid2 = new THREE.Mesh(gridGeometry2, gridMaterial2);
-            grid2.position.set(0, -0.25, 0.51); // Frontal, um pouco acima do centro
+            grid2.position.set(0, -0.25, 0.51);
             acBody.add(grid2);
 
-            // Criando o visor
-            const screenMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff, emissive: 0x0000ff }); // Azul emissivo
+           
+            const screenMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff, emissive: 0x0000ff });
             const screenGeometry = new THREE.PlaneGeometry(0.8, 0.3);
             const screen = new THREE.Mesh(screenGeometry, screenMaterial);
-            screen.position.set(0.5, 0.3, 0.51); // Superior direito
+            screen.position.set(0.5, 0.3, 0.51);
             acBody.add(screen);
 
-            // Adicionando a temperatura como texto no visor
+            const acStatus = await loadACStatus();
+            let   temperatureText = null;
+
             const loader = new FontLoader();
             loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-                const tempText = '24°C'; // Texto inicial
+                
+                let tempText = `${acStatus.temperature}°C`;
+                if (!acStatus.isOn) tempText = '--';
+                
                 const textGeometry = new TextGeometry(tempText, {
                     font: font,
                     size: 0.23,
                     depth: 0.01,
                 });
-                const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // Cor do texto
-                const temperatureText = new THREE.Mesh(textGeometry, textMaterial);
-                temperatureText.position.set(0.1, 0.2, 0.52); // Ajuste a posição do texto no visor
+                
+                const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+                
+                temperatureText = new THREE.Mesh(textGeometry, textMaterial);
+                temperatureText.position.set(0.1, 0.2, 0.52);
+                
                 acBody.add(temperatureText);
-
-                // Atualização da temperatura
-                let currentTemperature = 24; // Temperatura inicial
-                setInterval(() => {
-                    currentTemperature = Math.floor(Math.random() * 11) + 20; // Temperatura aleatória entre 20 e 30
-                    temperatureText.geometry.dispose(); // Remove a geometria antiga
-                    temperatureText.geometry = new TextGeometry(`${currentTemperature}°C`, {
-                        font: font,
-                        size: 0.23,
-                        depth: 0.01,
-                    });
-                }, 3000); // Atualiza a temperatura a cada 3 segundos
             });
             // ============= AR CONDICIONADO =============
 
             // ============= AUDIO =============
-            // create an AudioListener and add it to the camera
             const listener = new THREE.AudioListener();
             camera.add( listener );
 
-            // create a global audio source
             const sound = new THREE.Audio( listener );
 
-            // load a sound and set it as the Audio object's buffer
             const audioLoader = new THREE.AudioLoader();
             audioLoader.load( 'public/music/lofi.mp3', function( buffer ) {
                 sound.setBuffer( buffer );
@@ -377,26 +371,21 @@
                 sound.play();
             });
 
-            // Camera Position
             camera.position.set(0, 0, 10);
 
             const controls = new OrbitControls( camera, renderer.domElement );
             controls.update();
 
-            // Raycaster para detectar cliques
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
-            // Função para lidar com o clique
             function onMouseClick(event) {
 
                 if (event.target !== renderer.domElement) return;
 
-                // Converte as coordenadas do mouse para o intervalo [-1, 1]
                 mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-                // Atualiza o raycaster com a posição do mouse
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = {
                     'ar-condicionado': raycaster.intersectObject(acBody),
@@ -421,7 +410,6 @@
                 }
             }
 
-            // Animation Loop
             function animate() {
                 requestAnimationFrame(animate);
                 renderer.render(scene, camera);
@@ -431,7 +419,6 @@
 
             animate();
 
-            // Resize Event Listener
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
@@ -439,7 +426,6 @@
             });
 
             function showSubMenu(subMenuId) {
-                // Seleciona todos os submenus (incluindo #principal)
                 const subMenus = document.querySelectorAll("#orange-control > div");
                 subMenus.forEach(subMenu => {
                     if (subMenu.id.startsWith("submenu-")) {
@@ -447,7 +433,6 @@
                     }
                 });
             
-                // Mostra o submenu selecionado
                 const subMenuToShow = document.getElementById(subMenuId);
                 console.log(subMenuToShow);
                 if (subMenuToShow) {
@@ -459,7 +444,6 @@
 
             const toggle = () => {
                 console.log(menu.style.bottom)
-                // Alterna o menu entre visível e fora da tela
                 if (menu.style.bottom === '0px') {
                     menu.style.bottom = '-100%';  // Faz o menu desaparecer
                 } else {
@@ -499,6 +483,51 @@
                     alert("dispositivo não reconhecido.");
                 }
             }
+
+            document.getElementById("increase-temp").addEventListener("click", async () => {
+                const call = await increaseTemperature();
+                if (call.error || !call.isOn) return;
+
+                loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+                    temperatureText.geometry.dispose();
+                    temperatureText.geometry = new TextGeometry(`${call.temperature}°C`, {
+                        font: font,
+                        size: 0.23,
+                        depth: 0.01,
+                    });
+                });
+            });
+        
+            document.getElementById("decrease-temp").addEventListener("click", async () => {
+                const call = await decreaseTemperature();
+                if (call.error || !call.isOn) return;
+
+                loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+                    temperatureText.geometry.dispose();
+                    temperatureText.geometry = new TextGeometry(`${call.temperature}°C`, {
+                        font: font,
+                        size: 0.23,
+                        depth: 0.01,
+                    });
+                });
+            });
+        
+            document.getElementById("toggle-ac").addEventListener("click", async () => {
+                const call = await toggleAC();
+                if (call.error) return;
+
+                let text = '--';
+                if (call.isOn) text = `${call.temperature}°C`;
+
+                loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+                    temperatureText.geometry.dispose();
+                    temperatureText.geometry = new TextGeometry(text, {
+                        font: font,
+                        size: 0.23,
+                        depth: 0.01,
+                    });
+                });
+            });
         </script>
 	</body>
 </html>
