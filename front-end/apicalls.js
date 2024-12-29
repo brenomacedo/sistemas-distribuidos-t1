@@ -1,4 +1,4 @@
-const URL = 'http://127.0.0.1:5000/api/'
+const URL = 'http://127.0.0.1:5000/api/' // adicionar .env
 
 async function loadACStatus() {
     try {
@@ -66,6 +66,23 @@ async function toggleAC() {
         console.error(error.message);
         return {
             isOn: true,
+            temperature: 24,
+            error: true,
+        };
+    }
+}
+
+async function loadAmbientTemperature() {
+    try {
+        const response = await fetch(URL + 'sensor-temperature');
+        if (!response.ok) {
+            throw new Error('Erro sensor temperature');
+        }
+        const temperatureInfo = await response.json();
+        return temperatureInfo;
+    } catch (error) {
+        console.error(error.message);
+        return {
             temperature: 24,
             error: true,
         };

@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 
+import random
+
 app = Flask(__name__)
 
 CORS(app)
@@ -30,6 +32,13 @@ def decrease_temperature():
 def toggle():
     ac_status['isOn'] = not ac_status['isOn']
     return jsonify(ac_status)
+
+@app.route('/api/sensor-temperature', methods=['GET'])
+def sensor_temperature():
+    return jsonify({
+        "temperature": random.randint(20, 30),
+        "error": False
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
