@@ -13,6 +13,8 @@ class Gateway:
     tcp_listen_port: int = 5008,
     devices_port: int = 5006,
     discover_interval_in_seconds: int = 5,
+    client_ip: str = "",
+    client_port: int = 5006,
   ):
     self.device_counter = 0
     self.registered_devices = []
@@ -23,6 +25,8 @@ class Gateway:
     self.tcp_listen_port = tcp_listen_port
     self.devices_port = devices_port
     self.discover_interval_in_seconds = discover_interval_in_seconds
+    self.client_ip = client_ip
+    self.client_port = client_port
 
   def __send_socket(self, message: bytes, ip_address=None, port=None):
     port = port or self.devices_port
@@ -66,6 +70,11 @@ class Gateway:
     finally:
       sock.close()
 
+  def __get_device(self, device_id) -> dict | None:
+    for device in self.registered_devices:
+      if device["id"] == device_id:
+        return device
+
   def __listen_messages(self):
     server_socket = socket.socket(
       socket.AF_INET,  # familia de ips ipv4
@@ -90,12 +99,28 @@ class Gateway:
               "ip_address": client_address,
               "type": message.content.params[0],
             }
-
             self.registered_devices.append(new_device)
+
+            message = message_pb2.Message()
+            message.type = message_pb2.REGISTER_DEVICE
+            message.params.append(new_device["id"])
+            message.params.append(new_device["type"])
+            serialized_message = message.SerializeToString()
+            self.__send_socket(serialized_message, self.client_ip, self.client_port)
+
           elif message.content.type == message_pb2.TEMPERATURE_INFO:
             print(
               f"Temperatura do ar condicionado recebida! {message.content.params[0]} graus!"
             )
+            serialized_message = message.content.SerializeToString()
+            self.__send_socket(serialized_message, self.client_ip, self.client_port)
+          else:
+            device = self.__get_device(message.id)
+            if device:
+              serialized_message = message.content.SerializeToString()
+              self.__send_socket(
+                serialized_message, device["ip_address"], self.devices_port
+              )
 
         client_socket.close()
     finally:
