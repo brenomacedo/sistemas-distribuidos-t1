@@ -32,7 +32,7 @@ class ArCondicionado(Device):
           message.content.params.append(new_temperature)
           serialized_message = message.SerializeToString()
 
-          self._Device__send_socket(serialized_message)
+          self.__send_socket(serialized_message)
           time.sleep(2)
     except Exception as e:
       print(e)

@@ -58,7 +58,6 @@ class Device(ABC):
 
     message = message_pb2.Message()
     message.ParseFromString(data)
-    print(f"Mensagem recebida: {message.type}")
     sock.close()
 
     forwarded_message = message_pb2.ForwardedMessage()

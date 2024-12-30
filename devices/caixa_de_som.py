@@ -1,5 +1,6 @@
 from models import message_pb2
 from base_device import Device
+from devices import musics
 
 
 class CaixaDeSom(Device):
@@ -8,6 +9,7 @@ class CaixaDeSom(Device):
     self.powered_on = True
     self.volume = 30  # 0 - 100
     self.bluetooth_mode = False
+    self.music = "lofi"
 
   def handle_message(self, message):
     if message.type == message_pb2.TURN_ON:
@@ -25,6 +27,9 @@ class CaixaDeSom(Device):
     elif message.type == message_pb2.TURN_OFF_BLUETOOTH:
       self.bluetooth_mode = False
       print("Caixa de Som: modo bluetooth desligado")
+    elif message.type == message_pb2.CHANGE_MUSIC:
+      self.music = musics[message.params[0]]
+      print(f"Caixa de Som: musica mudada para {self.music}")
 
   def send_status(self):
     pass

@@ -13,8 +13,8 @@ class Gateway:
     tcp_listen_port: int = 5008,
     devices_port: int = 5006,
     discover_interval_in_seconds: int = 5,
-    client_ip: str = "",
-    client_port: int = 5006,
+    client_ip: str = "localhost",
+    client_port: int = 5001,
   ):
     self.device_counter = 0
     self.registered_devices = []
@@ -133,15 +133,6 @@ class Gateway:
 
     sender_thread.start()
     receiver_thread.start()
-
-    # TESTAR ENVIO DE MENSAGEM
-    time.sleep(10)
-    message = message_pb2.Message()
-    message.type = message_pb2.CHANGE_TEMPERATURE
-    print("Enviando mensagem mudando temperatura para 16 graus")
-    message.params.append(16)
-    serialized_message = message.SerializeToString()
-    self.__send_socket(serialized_message, "localhost")
 
     try:
       while True:
