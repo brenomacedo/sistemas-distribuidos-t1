@@ -110,3 +110,61 @@ async function changeTVColor(color) {
         return { error: error.message }; 
     }
 }
+
+async function loadMusicStatus() {
+    try {
+        const response = await fetch(URL + 'music-status');
+        if (!response.ok) {
+            throw new Error('Erro ao buscar o status da musica');
+        }
+        const acStatus = await response.json();
+        return acStatus;
+    } catch (error) {
+        console.error(error.message);
+        return {
+            isOn: true,
+            musicPath: 'public/music/lofi.mp3',
+            error: true,
+        };
+    }
+}
+
+async function toggleMusic() {
+    try {
+        const response = await fetch(URL + 'toggle-music');
+        if (!response.ok) {
+            throw new Error('Erro ao buscar o status da musica');
+        }
+        const acStatus = await response.json();
+        return acStatus;
+    } catch (error) {
+        console.error(error.message);
+        return {
+            isOn: false,
+            musicPath: 'public/music/lofi.mp3',
+            error: true,
+        };
+    }
+}
+
+async function selectMusic(music) {
+    try {
+        const response = await fetch(URL + 'select-music', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({ music: music }), 
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao mudar a cor da TV');
+        }
+
+        const data = await response.json();
+        return data; 
+    } catch (error) {
+        console.error('Erro:', error.message);
+        return { error: error.message }; 
+    }
+}

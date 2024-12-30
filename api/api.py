@@ -8,8 +8,14 @@ app = Flask(__name__)
 CORS(app)
 
 ac_status = {
-    'isOn': True,
+    'isOn': False,
     'temperature': 25,
+    'error': False
+}
+
+music_status = {
+    'isOn': False,
+    'musicPath': 'public/music/lofi.mp3',
     'error': False
 }
 
@@ -64,7 +70,38 @@ def change_color():
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/music-status', methods=['GET'])
+def get_music_status():
+    return jsonify(music_status)
 
+@app.route('/api/toggle-music', methods=['GET'])
+def toggle_music():
+    music_status['isOn'] = not music_status['isOn']
+    return jsonify(music_status)
+
+@app.route('/api/select-music', methods=['POST'])
+def change_music():
+    music_status['isOn'] = True
+
+    # FAZER ISSO AQUI NO GATEWAY/DISPOSITIVO
+    musics = {
+        "jazz": "public/music/jazz.mp3",
+        "lofi": "public/music/lofi.mp3",
+        "mozart": "public/music/mozart.mp3",
+    }
+    try:
+        data = request.get_json()  
+        music = data.get('music')  
+
+        if not music:
+            return jsonify({"error": "No music parameter provided"}), 400
+        
+        return jsonify({
+            "music": musics[music] 
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

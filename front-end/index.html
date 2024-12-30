@@ -314,7 +314,7 @@
             loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
                 
                 let tempText = `${acStatus.temperature}°C`;
-                if (!acStatus.isOn) tempText = '--';
+                if (!acStatus.isOn || acStatus.error) tempText = '--';
                 
                 const textGeometry = new TextGeometry(tempText, {
                     font: font,
@@ -384,15 +384,14 @@
             // ============= AUDIO =============
             const listener = new THREE.AudioListener();
             camera.add( listener );
-
             const sound = new THREE.Audio( listener );
-
             const audioLoader = new THREE.AudioLoader();
             audioLoader.load( 'public/music/lofi.mp3', function( buffer ) {
                 sound.setBuffer( buffer );
                 sound.setLoop( true );
                 sound.setVolume( 0.5 );
-                sound.play();
+                // sound.play();
+                // sound.stop();
             });
 
             camera.position.set(0, 0, 10);
@@ -538,7 +537,7 @@
         
             document.getElementById("toggle-ac").addEventListener("click", async () => {
                 const call = await toggleAC();
-                if (call.error) return;
+                if (!call || call.error) return;
 
                 let text = '--';
                 if (call.isOn) text = `${call.temperature}°C`;
@@ -552,6 +551,45 @@
                     });
                 });
             });
+
+            function changeMusic(newMusicUrl) { // public/music/lofi.mp3
+                sound.stop();
+            
+                audioLoader.load(newMusicUrl, function (buffer) {
+                    sound.setBuffer(buffer);  
+                    sound.setLoop(true);       
+                    sound.setVolume(0.5);      
+                    sound.play();              
+                });
+            }
+
+            document.getElementById("toggle-speaker").addEventListener("click", async () => {
+                const status = await loadMusicStatus();
+                if (!status || status.error) return;
+
+                if (status.isOn) {
+                    sound.stop();
+                } else {
+                    sound.play();
+                }
+
+                await toggleMusic();
+            })
+
+            document.getElementById("play-jazz").addEventListener("click", async () => {
+                const music = await selectMusic('jazz');
+                changeMusic(music.music);
+            });
+
+            document.getElementById("play-lofi").addEventListener("click", async () => {
+                const music = await selectMusic('lofi');
+                changeMusic(music.music);
+            })
+
+            document.getElementById("play-mozart").addEventListener("click", async () => {
+                const music = await selectMusic('mozart');
+                changeMusic(music.music);
+            })
 
             const changeColors = async (colorName) => {
                 const info = await changeTVColor(colorName);
@@ -570,6 +608,7 @@
             document.getElementById("light-red").addEventListener("click", async () => await changeColors("light-red"));
             document.getElementById("light-yellow").addEventListener("click", async () => await changeColors("light-yellow"));
         
+            
         </script>
 	</body>
 </html>
