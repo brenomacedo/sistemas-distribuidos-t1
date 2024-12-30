@@ -40,7 +40,8 @@ class Gateway:
 
       client_socket.sendall(message)
       client_socket.close()
-    except Exception:
+    except Exception as e:
+      print(e)
       print("Falha ao mandar socket")
 
   def __discover_devices(self):
@@ -99,7 +100,7 @@ class Gateway:
             self.device_counter += 1
             new_device = {
               "id": self.device_counter,
-              "ip_address": client_address,
+              "ip_address": client_address[0],
               "type": message.content.params[0],
             }
             self.registered_devices.append(new_device)

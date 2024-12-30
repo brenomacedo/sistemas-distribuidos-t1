@@ -8,7 +8,7 @@ class ArCondicionado(Device):
   def __init__(self):
     super().__init__(device_type=message_pb2.AIR_CONDITIONING)
     self.temperature = 25
-    self.powered_on = True
+    self.powered_on = False
 
   def handle_message(self, message):
     if message.type == message_pb2.TURN_ON:
