@@ -1,4 +1,4 @@
-const URL = 'http://127.0.0.1:5000/api/' // adicionar .env
+const URL = 'http://127.0.0.1:5000/api/' // MUDAR EM PROD
 
 async function loadACStatus() {
     try {
