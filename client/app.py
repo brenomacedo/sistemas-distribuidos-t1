@@ -156,7 +156,7 @@ def change_color():
       message = message_pb2.ForwardedMessage()
       message.id = device["id"]
       message.content.type = message_pb2.CHANGE_COLOR
-      message.params.append(list(colors.keys()).index(color))
+      message.content.params.append(list(colors.keys()).index(color))
       serialized_message = message.SerializeToString()
       send_message(serialized_message)
 
@@ -209,12 +209,13 @@ def change_music():
       message = message_pb2.ForwardedMessage()
       message.id = device["id"]
       message.content.type = message_pb2.CHANGE_MUSIC
-      message.params.append(list(musics.keys()).index(music))
+      message.content.params.append(list(musics.keys()).index(music))
       serialized_message = message.SerializeToString()
       send_message(serialized_message)
 
     return jsonify({"music": musics[music]}), 200
   except Exception as e:
+    print(e)
     return jsonify({"error": str(e)}), 500
 
 

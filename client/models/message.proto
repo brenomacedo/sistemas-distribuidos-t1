@@ -19,6 +19,7 @@ enum MessageType {
   TURN_OFF_LED_VOLUME_SYNC = 13;
   LOCK = 14;
   UNLOCK = 15;
+  CHANGE_MUSIC = 16;
 }
 
 
