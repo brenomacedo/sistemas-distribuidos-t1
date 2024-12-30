@@ -13,7 +13,7 @@ class Gateway:
     tcp_listen_port: int = 5008,
     devices_port: int = 5006,
     discover_interval_in_seconds: int = 5,
-    client_ip: str = "localhost",
+    client_ip: str = "172.31.30.18",
     client_port: int = 5001,
   ):
     self.device_counter = 0
