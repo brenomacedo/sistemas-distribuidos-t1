@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package sistemas_distribuidos;
+
+enum MessageType {
+  DEVICE_DISCOVERY = 0;
+  REGISTER_DEVICE = 1;
+  TURN_ON = 2;
+  TURN_OFF = 3;
+  CHANGE_TEMPERATURE = 4;
+  TEMPERATURE_INFO = 5;
+  CHANGE_COLOR = 6;
+  CHANGE_INTENSITY = 7;
+  CHANGE_VOLUME = 8;
+  TURN_ON_BLUETOOTH = 9;
+  TURN_OFF_BLUETOOTH = 10;
+  CHANGE_CHANNEL = 11;
+  TURN_ON_LED_VOLUME_SYNC = 12;
+  TURN_OFF_LED_VOLUME_SYNC = 13;
+  LOCK = 14;
+  UNLOCK = 15;
+}
+
+
+enum DeviceType {
+  AIR_CONDITIONING = 0;
+  ABAJOUR = 1;
+  ARTIFICIAL_LIGHT = 2;
+  ABAJUR = 3;
+  SOUND_BOX = 4;
+  TELEVISION = 5;
+  DOOR = 6;
+}
+
+
+message Message {
+  optional MessageType type = 1;
+  repeated int32 params = 2;
+}
+
+message ForwardedMessage {
+  optional int32 id = 1;
+  optional Message content = 2;
+}

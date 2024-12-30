@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo de Markdown</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked@3.0.7/marked.min.js"></script> <!-- Versão 3.x -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #markdownContainer {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        a {
+            color: #007BFF;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="markdownContainer" style="display: none;">
+        <!-- O conteúdo Markdown será carregado aqui -->
+    </div>
+
+    <script>
+        // Função para carregar o conteúdo Markdown e exibi-lo
+        function showMarkdown() {
+            const markdownContent = `
+# Quarto Gamer Interativo
+
+O Quarto Gamer é um ambiente 3D interativo, simulando um ambiente inteligente. O quarto é composto por diversos dispositivos os quais são interativos, podendo ajustar configurações como iluminação, som e temperatura.
+
+Esse documento serve como um manual das funcionalidades presentes no ambiente e instruções de como interagir com o quarto.
+
+## Controles da Câmera
+
+- **Scroll do mouse:** Controla a movimentação da câmera para frente ou para trás (zoom in ou zoom out).
+- **Botão direito do mouse:** Clicando e arrastando com o botão direto, é possível mover a câmera de forma vertical e horizontal.
+- **Botão esquerdo do mouse:** Ao clicar e segurar o botão esquerdo do mouse, é possível girar a câmera, movimentando o mouse.
+
+## Objetos do Quarto Gamer
+
+Abaixo segue uma lista de todos os dispositivos interativos, descrevendo todas as suas funcionalidades. Para acessar as funções de cada dispositivo, basta clicar nele com o botão esquerdo do mouse.
+
+### Ar-condicionado
+
+- **Ligar/Desligar:** ativa ou desativa o dispositivo.
+- **Diminuir Temperatura:** diminui a temperatura do ar-condicionado.
+- **Aumentar Temperatura:** aumenta a temperatura do ar-condicionado.
+
+### Caixa de Som
+
+- **Ligar/Desligar:** ativa ou desativa o dispositivo.
+- **Tocar Jazz:** configura o som para ser uma música de jazz.
+- **Tocar Lofi:** configura o som para ser uma música lofi.
+- **Tocar Mozart:** configura o som para ser uma música de Mozart.
+
+### Televisão
+
+- **Mudança de Luzes:** clique com o botão esquerdo na cor para a qual deseja mudar as luzes.
+
+### Sensor de Temperatura
+
+- Não é um objeto interativo, apenas exibe a temperatura local.
+
+
+            `;
+            
+            // Converte o Markdown para HTML usando a biblioteca marked.js
+            const htmlContent = marked.parse(markdownContent); // Usando marked.parse() na versão 3.x
+            
+            // Obtém o container do markdown
+            const markdownContainer = document.getElementById('markdownContainer');
+            
+            // Insere o HTML gerado no container
+            markdownContainer.innerHTML = htmlContent;
+            
+            // Exibe o container
+            markdownContainer.style.display = 'block';
+        }
+
+        // Chama a função para mostrar o markdown assim que a página for carregada
+        window.onload = showMarkdown;
+    </script>
+
+</body>
+</html>
