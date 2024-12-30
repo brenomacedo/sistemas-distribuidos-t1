@@ -29,16 +29,19 @@ class Gateway:
     self.client_port = client_port
 
   def __send_socket(self, message: bytes, ip_address=None, port=None):
-    port = port or self.devices_port
+    try:
+      port = port or self.devices_port
 
-    if ip_address is None:
-      return
+      if ip_address is None:
+        return
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((ip_address, port))
+      client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      client_socket.connect((ip_address, port))
 
-    client_socket.sendall(message)
-    client_socket.close()
+      client_socket.sendall(message)
+      client_socket.close()
+    except Exception:
+      print("Falha ao mandar socket")
 
   def __discover_devices(self):
     sock = socket.socket(

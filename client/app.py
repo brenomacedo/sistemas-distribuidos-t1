@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 CORS(app)
 
-DEVICES_MAP = {
+DEVICES_MAP = [
   "AIR_CONDITIONING",
   "ABAJOUR",
   "ARTIFICIAL_LIGHT",
@@ -21,7 +21,7 @@ DEVICES_MAP = {
   "SOUND_BOX",
   "TELEVISION",
   "DOOR",
-}
+]
 
 ac_status = {"isOn": False, "temperature": 25, "error": False}
 music_status = {"isOn": False, "musicPath": "public/music/lofi.mp3", "error": False}
@@ -36,6 +36,12 @@ def send_message(message: bytes):
 
   client_socket.sendall(message)
   client_socket.close()
+
+
+def get_device(device_type):
+  for device in devices:
+    if device["type"] == device_type:
+      return device
 
 
 def listen_messages():
@@ -63,8 +69,8 @@ def listen_messages():
           print(
             f"Nova temperatura detectada pelo sensor: {sensor_temperature_status['temperature']}"
           )
-  except Exception:
-    pass
+  except Exception as e:
+    print(e)
 
 
 Thread(target=listen_messages).start()
@@ -79,6 +85,16 @@ def get_ac_status():
 def increase_temperature():
   if ac_status["isOn"]:
     ac_status["temperature"] += 1
+    device = get_device("AIR_CONDITIONING")
+
+    if device:
+      message = message_pb2.ForwardedMessage()
+      message.id = device["id"]
+      message.content.type = message_pb2.CHANGE_TEMPERATURE
+      message.content.params.append(ac_status["temperature"])
+      serialized_message = message.SerializeToString()
+      send_message(serialized_message)
+
   return jsonify(ac_status)
 
 
@@ -86,12 +102,31 @@ def increase_temperature():
 def decrease_temperature():
   if ac_status["isOn"]:
     ac_status["temperature"] -= 1
+    device = get_device("AIR_CONDITIONING")
+
+    if device:
+      message = message_pb2.ForwardedMessage()
+      message.id = device["id"]
+      message.content.type = message_pb2.CHANGE_TEMPERATURE
+      message.content.params.append(ac_status["temperature"])
+      serialized_message = message.SerializeToString()
+      send_message(serialized_message)
   return jsonify(ac_status)
 
 
 @app.route("/api/ac-toggle", methods=["GET"])
 def toggle():
   ac_status["isOn"] = not ac_status["isOn"]
+  device = get_device("AIR_CONDITIONING")
+
+  if device:
+    message_type = message_pb2.TURN_ON if ac_status["isOn"] else message_pb2.TURN_OFF
+    message = message_pb2.ForwardedMessage()
+    message.id = device["id"]
+    message.content.type = message_type
+    serialized_message = message.SerializeToString()
+    send_message(serialized_message)
+
   return jsonify(ac_status)
 
 
@@ -116,6 +151,15 @@ def change_color():
     data = request.get_json()
     color = data.get("color")
 
+    device = get_device("ARTIFICIAL_LIGHT")
+    if device:
+      message = message_pb2.ForwardedMessage()
+      message.id = device["id"]
+      message.content.type = message_pb2.CHANGE_COLOR
+      message.params.append(list(colors.keys()).index(color))
+      serialized_message = message.SerializeToString()
+      send_message(serialized_message)
+
     if not color:
       return jsonify({"error": "No color parameter provided"}), 400
 
@@ -132,6 +176,16 @@ def get_music_status():
 @app.route("/api/toggle-music", methods=["GET"])
 def toggle_music():
   music_status["isOn"] = not music_status["isOn"]
+
+  device = get_device("SOUND_BOX")
+  if device:
+    message_type = message_pb2.TURN_ON if music_status["isOn"] else message_pb2.TURN_OFF
+    message = message_pb2.ForwardedMessage()
+    message.id = device["id"]
+    message.content.type = message_type
+    serialized_message = message.SerializeToString()
+    send_message(serialized_message)
+
   return jsonify(music_status)
 
 
@@ -149,6 +203,15 @@ def change_music():
 
     if not music:
       return jsonify({"error": "No music parameter provided"}), 400
+
+    device = get_device("SOUND_BOX")
+    if device:
+      message = message_pb2.ForwardedMessage()
+      message.id = device["id"]
+      message.content.type = message_pb2.CHANGE_MUSIC
+      message.params.append(list(musics.keys()).index(music))
+      serialized_message = message.SerializeToString()
+      send_message(serialized_message)
 
     return jsonify({"music": musics[music]}), 200
   except Exception as e:
