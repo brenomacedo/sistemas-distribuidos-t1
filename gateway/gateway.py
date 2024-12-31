@@ -8,7 +8,7 @@ from devices import message_types
 class Gateway:
   def __init__(
     self,
-    multicast_group_ip: str = "224.1.1.1",
+    multicast_group_ip: str = "224.0.0.1",
     multicast_group_port: int = 5005,
     tcp_listen_ip: str = "0.0.0.0",
     tcp_listen_port: int = 5008,

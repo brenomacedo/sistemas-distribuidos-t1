@@ -10,7 +10,7 @@ class Device(ABC):
   def __init__(
     self,
     device_type,
-    multicast_group_ip="224.1.1.1",
+    multicast_group_ip="224.0.0.1",
     multicast_group_port=5005,
     tcp_listen_ip="0.0.0.0",
     tcp_listen_port=5006,
