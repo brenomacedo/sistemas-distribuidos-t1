@@ -14,7 +14,7 @@ class Gateway:
     tcp_listen_port: int = 5008,
     devices_port: int = 5006,
     discover_interval_in_seconds: int = 5,
-    client_ip: str = "172.31.30.18",
+    client_ip: str = "172.31.92.40",
     client_port: int = 5001,
   ):
     self.device_counter = 0
@@ -55,6 +55,9 @@ class Gateway:
     sock.setsockopt(
       socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2
     )  # Definir o TTL do multicast no nivel IP
+    sock.setsockopt(
+      socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton("MCAST_IF_IP")
+    )
 
     try:
       while True:

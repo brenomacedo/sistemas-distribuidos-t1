@@ -5,7 +5,7 @@ from models import message_pb2
 import socket
 
 GATEWAY_PORT = 5008
-GATEWAY_IP = "172.31.24.44"
+GATEWAY_IP = "172.31.91.244"
 TCP_LISTEN_IP = "0.0.0.0"
 TCP_LISTEN_PORT = 5001
 

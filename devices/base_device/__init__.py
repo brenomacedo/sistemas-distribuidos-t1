@@ -48,7 +48,7 @@ class Device(ABC):
     sock.bind(("", self.multicast_group_port))
 
     group = socket.inet_aton(self.multicast_group_ip)
-    mreq = struct.pack("4sL", group, socket.INADDR_ANY)
+    mreq = struct.pack("4s4s", group, socket.inet_aton("MCAST_IF_IP"))
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
     data, address = sock.recvfrom(1024)
