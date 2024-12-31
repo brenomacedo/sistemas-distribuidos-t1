@@ -12,7 +12,7 @@ sock = socket.socket(
 sock.setsockopt(
   socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2
 )  # Definir o TTL do multicast no nivel IP
-sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton("MCAST_IF_IP"))
+sock.setsockopt(socket.SOL_IP, socket.IP_MULTICAST_IF, socket.inet_aton("10.0.0.106"))
 
 
 print(
