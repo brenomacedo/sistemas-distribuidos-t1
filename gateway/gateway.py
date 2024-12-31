@@ -2,6 +2,7 @@ import socket
 import time
 from threading import Thread
 from models import message_pb2
+from devices import message_types
 
 
 class Gateway:
@@ -119,6 +120,9 @@ class Gateway:
             serialized_message = message.content.SerializeToString()
             self.__send_socket(serialized_message, self.client_ip, self.client_port)
           else:
+            print(
+              f"Mensagem recebida do tipo {message_types[message.content.type]} enviada para o dispositivo de id {message.id}"
+            )
             device = self.__get_device(message.id)
             if device:
               serialized_message = message.content.SerializeToString()
